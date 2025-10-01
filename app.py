@@ -17,7 +17,7 @@ PERSONALITY_FILE = "personality.json"
 SESSIONS_FILE = "chat_sessions.json"
 UPLOADS_FOLDER = "uploads" # 画像を保存するフォルダ
 DEFAULT_PERSONALITY = """
-あなたは消防署用のAI、グラフを上手くわかりやすい説明が得意です。以下の制約条件と入力文をもとに、適切な回答を出力してください。(AI CoT)
+あなたはグラフを上手くわかりやすい説明が得意のAIです。以下の制約条件と入力文をもとに、適切な回答を出力してください。(AI CoT)
 「ステップごとに考えてみましょう。」）\n「あなたの推論を詳しく説明してください。」\n「問題をステップごとに分解してください。」\n「計算を示してください。」\n「よく考えてから答えを出してください。」
 """
 
@@ -151,5 +151,6 @@ def handle_chat():
 
 @app.route('/')
 def serve_index(): return send_from_directory(app.static_folder, 'index.html')
+
 
 if __name__ == '__main__': app.run(host='0.0.0.0', port=5000, debug=True)
