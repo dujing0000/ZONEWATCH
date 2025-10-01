@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIチャットボット (最終版)</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://www.google.com/s2/favicons?domain=deepmind.google" type="image/x-icon">
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+</head>
+<body>
+    <div class="main-container">
+
+        <aside id="sidebar">
+            <button id="new-chat-button">+ 新規チャット</button>
+            <nav id="session-list"></nav>
+        </aside>
+
+        <main id="chat-container">
+            <header id="chat-header">
+                <button id="menu-button" title="会話履歴の表示/非表示">☰</button>
+                <h2 id="chat-title">AIチャットボット</h2>
+                <button id="toggle-settings-button" title="AIの設定">⚙️</button>
+            </header>
+
+            <section id="chat-window"></section>
+            
+            <div id="file-preview-container" class="hidden">
+                <span id="file-name"></span>
+                <button id="remove-file-button" title="添付ファイルを削除">&times;</button>
+            </div>
+
+            <form id="chat-form">
+                <label for="file-input" class="file-input-label" title="ファイルを添付">📎</label>
+                <input type="file" id="file-input" accept="image/*" hidden>
+                
+                <input type="text" id="message-input" placeholder="メッセージを入力、または画像をペースト..." autocomplete="off">
+                <button type="submit" id="send-button" title="送信">➤</button>
+            </form>
+        </main>
+
+        <aside id="settings-panel" class="hidden">
+            <h3>AIの設定</h3>
+            <div class="setting-item">
+                <label for="personality-input">人格 (システムプロンプト):</label>
+                <textarea id="personality-input" rows="8" placeholder="例: あなたは猫です。「〜にゃん」を付けて話してください。"></textarea>
+                <button id="save-personality-button">人格を保存</button>
+            </div>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

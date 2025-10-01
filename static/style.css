@@ -1,0 +1,218 @@
+/* =================================
+   基本スタイルとレイアウト
+   ================================= */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    color: #333;
+    overflow: hidden;
+}
+
+.main-container {
+    display: flex;
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* =================================
+   左サイドバー (会話履歴)
+   ================================= */
+#sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 260px;
+    background-color: #202123;
+    color: white;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+}
+
+#sidebar.visible {
+    transform: translateX(0);
+}
+
+#new-chat-button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: transparent;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+#new-chat-button:hover {
+    background-color: #343541;
+}
+
+#session-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.session-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+    position: relative;
+}
+.session-item:hover {
+    background-color: #343541;
+}
+.session-item.active {
+    background-color: #4A90E2;
+}
+
+.session-title {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 5px;
+}
+
+.session-actions {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    background-color: #343541;
+    padding: 3px 5px;
+    border-radius: 5px;
+}
+.session-item:hover .session-actions {
+    display: flex;
+}
+
+.session-action-button {
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 3px;
+}
+.session-action-button:hover {
+    color: #ffffff;
+}
+.session-action-button.pinned {
+    color: #4A90E2; 
+}
+
+/* =================================
+   中央チャットコンテナ
+   ================================= */
+main#chat-container {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+}
+
+header#chat-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 15px;
+    border-bottom: 1px solid #ddd;
+    flex-shrink: 0;
+}
+#chat-header h2 {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 1.1em;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#menu-button, #toggle-settings-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 10px;
+    color: #555;
+    transition: color 0.2s;
+}
+#menu-button:hover, #toggle-settings-button:hover {
+    color: #000;
+}
+
+section#chat-window {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-message { padding: 10px 15px; border-radius: 18px; max-width: 80%; line-height: 1.5; word-wrap: break-word; display: flex; flex-direction: column; gap: 8px; }
+.user-message { background-color: #4A90E2; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.bot-message { background-color: #e9e9eb; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
+.user-message .message-image, .bot-message .message-image { max-width: 100%; max-height: 300px; border-radius: 10px; object-fit: contain; }
+.system-message { background-color: #fffbe5; color: #5c5224; align-self: center; font-size: 0.9em; font-style: italic; text-align: center; padding: 8px 12px; }
+.bot-message.loading::after { content: '...'; display: inline-block; animation: loading-dots 1.4s infinite; }
+@keyframes loading-dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } }
+
+/* Markdown表示用のスタイル */
+.bot-message p { margin: 0 0 10px 0; }
+.bot-message ul, .bot-message ol { padding-left: 20px; margin: 0 0 10px 0; }
+.bot-message li { margin-bottom: 5px; }
+.bot-message code { background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+.bot-message pre { background-color: #e0e0e0; padding: 10px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
+
+
+#file-preview-container { padding: 5px 15px; background-color: #f0f2f5; display: flex; justify-content: space-between; align-items: center; font-size: 0.9em; border-top: 1px solid #ddd; }
+#file-preview-container.hidden { display: none; }
+#remove-file-button { background: none; border: none; font-size: 1.2em; cursor: pointer; color: #888; }
+
+form#chat-form { display: flex; align-items: center; border-top: 1px solid #ddd; padding: 10px 15px; gap: 10px; flex-shrink: 0; }
+.file-input-label { font-size: 1.5em; cursor: pointer; padding: 5px; color: #555; }
+#message-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 10px 15px; font-size: 1em; outline: none; transition: border-color 0.2s; }
+#message-input:focus { border-color: #4A90E2; }
+#send-button { background-color: #4A90E2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5em; cursor: pointer; transition: background-color 0.2s; flex-shrink: 0; }
+#send-button:hover { background-color: #357ABD; }
+
+/* =================================
+   右サイドバー (設定パネル)
+   ================================= */
+aside#settings-panel {
+    width: 300px;
+    background-color: #f9f9f9;
+    border-left: 1px solid #ddd;
+    padding: 20px;
+    transition: width 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+#settings-panel.hidden { width: 0; padding: 20px 0; border-left: none; }
+#settings-panel h3 { margin-top: 0; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.setting-item { display: flex; flex-direction: column; gap: 8px; }
+.setting-item label { font-weight: bold; font-size: 0.9em; color: #555; }
+.setting-item textarea { width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 0.95em; box-sizing: border-box; font-family: inherit; resize: vertical; min-height: 100px; }
+.setting-item button { background-color: #5cb85c; color: white; border: none; border-radius: 8px; padding: 10px; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
+.setting-item button:hover { background-color: #4a934a; }
