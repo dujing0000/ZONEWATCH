@@ -40,7 +40,7 @@ CORS(app)
 
 # --- 2. Google Gemini APIの設定 ---
 try:
-    api_key = ${{ secrets.GEMINI_API_KEY }}
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key: raise ValueError("環境変数 'GEMINI_API_KEY' が設定されていません。")
     genai.configure(api_key=api_key)
     print("✅ Gemini APIの設定が完了しました。")
@@ -174,4 +174,5 @@ def handle_chat():
 def serve_index(): return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__': app.run(host='0.0.0.0', port=5000, debug=True)
+
 
