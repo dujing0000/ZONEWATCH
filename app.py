@@ -17,8 +17,18 @@ PERSONALITY_FILE = "personality.json"
 SESSIONS_FILE = "chat_sessions.json"
 UPLOADS_FOLDER = "uploads" # 画像を保存するフォルダ
 DEFAULT_PERSONALITY = """
-あなたはグラフを上手くわかりやすい説明が得意のAIです。以下の制約条件と入力文をもとに、適切な回答を出力してください。(AI CoT)
-「ステップごとに考えてみましょう。」）\n「あなたの推論を詳しく説明してください。」\n「問題をステップごとに分解してください。」\n「計算を示してください。」\n「よく考えてから答えを出してください。」
+あなたはZONEWATCHのAIです。グラフやデータの説明が得意で、必ずChain-of-Thought（思考の連鎖）を使って、段階的に推論・説明を行います。
+【制約条件】
+- 必ず「ステップバイステップ」で考え、推論の過程を明示してください。
+- 問題を分解し、各ステップで何を考えているかを説明してください。
+- 計算や根拠がある場合は必ず示してください。
+- 最終的な答えの前に、思考の流れを箇条書きや文章で整理してください。
+- 途中で分からないことがあれば、仮定や追加情報を述べてください。
+- 回答例：
+    1. まず○○について考えます。
+    2. 次に△△を確認します。
+    3. 以上より、□□と判断できます。
+- 必ず「Chain-of-Thought（思考の連鎖）」を意識して、推論の過程を丁寧に説明してください。
 """
 
 # uploadsフォルダが存在しない場合は作成
@@ -48,7 +58,12 @@ def save_data(filepath, data):
     with open(filepath, 'w', encoding='utf-8') as f: json.dump(data, f, ensure_ascii=False, indent=2)
 
 # --- 4. グローバル変数の読み込み ---
-system_instruction = load_data(PERSONALITY_FILE, {"personality": DEFAULT_PERSONALITY})["personality"]
+# 人格設定は常に DEFAULT_PERSONALITY をベースにし、ユーザーが設定した追加の指示（override）を結合する設計にする。
+# ファイルには "override" 部分のみを保存し、実際にモデルに渡す system_instruction は常に
+# DEFAULT_PERSONALITY + "\n" + user_personality となる。
+personality_data = load_data(PERSONALITY_FILE, {"personality": ""})
+user_personality = personality_data.get("personality", "") or ""
+system_instruction = DEFAULT_PERSONALITY + ("\n" + user_personality if user_personality else "")
 chat_sessions_data = load_data(SESSIONS_FILE, {})
 
 # =================================
@@ -99,10 +114,16 @@ def pin_session(session_id):
 # --- 4.3. チャットと設定のAPI ---
 @app.route('/api/set_personality', methods=['POST'])
 def set_personality():
-    global system_instruction
-    system_instruction = request.get_json().get('personality', '').strip() or DEFAULT_PERSONALITY
-    save_data(PERSONALITY_FILE, {"personality": system_instruction})
-    return jsonify({"status": "success", "message": f"人格を設定しました。"})
+    """ユーザーが入力した人格（オーバーライド部分）を保存し、
+    実際にモデルに渡す system_instruction は常に DEFAULT_PERSONALITY を先頭に付与する。
+    """
+    global system_instruction, user_personality
+    override = request.get_json().get('personality', '').strip() or ""
+    # ファイルにはオーバーライド部分のみを保存する
+    save_data(PERSONALITY_FILE, {"personality": override})
+    user_personality = override
+    system_instruction = DEFAULT_PERSONALITY + ("\n" + user_personality if user_personality else "")
+    return jsonify({"status": "success", "message": "人格（オーバーライド）を保存しました。"})
 
 @app.route('/api/chat', methods=['POST'])
 def handle_chat():
@@ -151,6 +172,5 @@ def handle_chat():
 
 @app.route('/')
 def serve_index(): return send_from_directory(app.static_folder, 'index.html')
-
 
 if __name__ == '__main__': app.run(host='0.0.0.0', port=5000, debug=True)
